@@ -58,9 +58,11 @@ int main(int argc, char ** argv)
   request->b = 3;
   request->sent_time_us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
+  auto start_time_us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
   auto result = send_request(node, client, request);
+  auto end_time_us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
   if (result) {
-    RCLCPP_INFO_STREAM(node->get_logger(), "Result of add_two_ints: " << result->sum << ", took " << result->result_time_us - request->sent_time_us << " us");
+    RCLCPP_INFO_STREAM(node->get_logger(), "Result of add_two_ints: " << result->sum << ", took " << end_time_us - start_time_us << " total us, " << result->result_time_us - request->sent_time_us << " us to compute the result");
   } else {
     RCLCPP_ERROR(node->get_logger(), "Interrupted while waiting for response. Exiting.");
   }
