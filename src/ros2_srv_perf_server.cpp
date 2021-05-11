@@ -35,9 +35,10 @@ public:
       {
         (void)request_header;
         RCLCPP_INFO(
-          this->get_logger(), "Incoming request\na: %" PRId64 " b: %" PRId64,
-          request->a, request->b);
+          this->get_logger(), "Incoming request (%lu)\na: %" PRId64 " b: %" PRId64,
+          request->sent_time_us, request->a, request->b);
         response->sum = request->a + request->b;
+        response->result_time_us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
       };
     // Create a service that will use the callback function to handle requests.
     srv_ = create_service<ros2_srv_perf::srv::CheckTime>("check_time", handle_add_two_ints);

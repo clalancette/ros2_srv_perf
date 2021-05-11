@@ -45,10 +45,6 @@ int main(int argc, char ** argv)
 
   auto client = node->create_client<ros2_srv_perf::srv::CheckTime>("check_time");
 
-  auto request = std::make_shared<ros2_srv_perf::srv::CheckTime::Request>();
-  request->a = 2;
-  request->b = 3;
-
   while (!client->wait_for_service(1s)) {
     if (!rclcpp::ok()) {
       RCLCPP_ERROR(node->get_logger(), "Interrupted while waiting for the service. Exiting.");
@@ -57,9 +53,14 @@ int main(int argc, char ** argv)
     RCLCPP_INFO(node->get_logger(), "service not available, waiting again...");
   }
 
+  auto request = std::make_shared<ros2_srv_perf::srv::CheckTime::Request>();
+  request->a = 2;
+  request->b = 3;
+  request->sent_time_us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
   auto result = send_request(node, client, request);
   if (result) {
-    RCLCPP_INFO_STREAM(node->get_logger(), "Result of add_two_ints: " << result->sum);
+    RCLCPP_INFO_STREAM(node->get_logger(), "Result of add_two_ints: " << result->sum << ", took " << result->result_time_us - request->sent_time_us << " us");
   } else {
     RCLCPP_ERROR(node->get_logger(), "Interrupted while waiting for response. Exiting.");
   }

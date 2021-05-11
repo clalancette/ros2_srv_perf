@@ -1,6 +1,6 @@
 int64 a
 int64 b
-int64 sent_time_ms
+int64 sent_time_us
 ---
 int64 sum
-int64 result_time_ms
+int64 result_time_us
